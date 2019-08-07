@@ -8,7 +8,9 @@ class Game
   def play_round
     while true
       puts "Select piece xy"
-      piece = get_piece(gets.chomp)
+      fromXY = gets.chomp
+      piece = get_piece(fromXY)
+      piece.current_location = get_xy(fromXY)
       if piece == "O"
         puts "No chess piece"
         next
@@ -19,53 +21,58 @@ class Game
  
     while true
       puts "Move to xy"
-      xy = get_xy(gets.chomp)
-      x = xy[0]
-      y = xy[1]
-      pawn_check_enemies(xy, piece) if piece.symbol = "p"
-      piece.possible_moves(x, y)
-      if piece.moves.include?(xy)
-        @board.update[x][y] = piece
+      toXY = get_xy(gets.chomp)
+      piece.possible_moves
+      pawn_check_enemies(piece) if piece.symbol == "p"
+      if piece.moves.include?(toXY)
+        move_piece(piece, toXY)
+        break
+      else
+        next
       end
     end
   end
  
   private
-  def get_piece(coordinates)
+  def move_piece(piece, toXY)
+    @board.update[toXY[0]][toXY[1]] = piece
+    xy = piece.current_location
+    piece.current_location = [toXY[0], toXY[1]]
+    @board.update[xy[0]][xy[1]] = "O"
+  end
+
+  def get_piece(coordinates) 
     xy = get_xy(coordinates)
     @board.update[xy[0]][xy[1]]
   end
  
   def get_xy(coordinates)
     coordinates = coordinates.to_s
-    coordinates = coordinates.split
+    coordinates = coordinates.split("")
     x = coordinates[0].to_i
     y = coordinates[1].to_i
     [x, y]
   end
  
-  def pawn_check_enemies(coordinates, piece)
-    xy = get_xy(coordinates)
-    x = xy[0]
-    y = xy[1]
-    if piece.colour == "black"
-      for black_piece in black_pieces
-        add_moves(x, y, piece, black_piece)
-      end
+  def pawn_check_enemies(piece)
+    x = piece.current_location[0]
+    y = piece.current_location[1]
+    puts [x-1, y+1].inspect
+    if piece.colour == "white"
+      (piece.moves << [x-1, y+1]) if @board.black_pieces.include?(@board.update[x-1][y+1])
+      (piece.moves << [x-1, y-1]) if @board.black_pieces.include?(@board.update[x-1][y-1])
+      return
     else
-      for white_piece in white_pieces
-        add_moves(x, y, piece, white_piece)
-      end
+      (piece.moves << [x-1, y+1]) if @board.white_pieces.include?(@board.update[x-1][y+1])
+      (piece.moves << [x-1, y-1]) if @board.white_pieces.include?(@board.update[x-1][y-1])
+      return
     end
-  end
- 
-  def add_moves(x, y, piece, enemy_piece)
-    piece.moves << [x+1, y+1] if @board.update[x+1][y+1] == enemy_piece
-    piece.moves << [x-1, y+1] if @board.update[x+1][y+1] == enemy_piece
   end
 end
  
 class Board
+  attr_reader :white_pieces, :black_pieces
+
   def initialize
     create_board
     populate_board
@@ -94,20 +101,21 @@ class Board
     end
   end
  
-  def update(position)
+  def update
     @board
   end
  
   private
   def populate_board
     #populate black pieces
-    black_pieces = Array.new
+    @black_pieces = Array.new
     8.times do |y|
       @board[1][y] = Pawn.new("black")
-      black_pieces << @board[1][y]
+      @black_pieces << @board[1][y]
     end
  
-    @board[0][0] = Rook.new("black")
+    @board[5][1] = Rook.new("black")
+    @black_pieces << @board[5][1]
     @board[0][1] = Knight.new("black")
     @board[0][2] = Bishop.new("black")
     @board[0][3] = Queen.new("black")
@@ -115,13 +123,13 @@ class Board
     @board[0][5] = Bishop.new("black")
     @board[0][6] = Knight.new("black")
     @board[0][7] = Rook.new("black")
-    @board[0].each { |piece| black_pieces << piece }
+    #@board[0].each { |piece| @black_pieces << piece }
  
     #populate white pieces
-    white_pieces = Array.new
+    @white_pieces = Array.new
     8.times do |y|
       @board[6][y] = Pawn.new("white")
-      white_pieces << @board[6][y]
+      @white_pieces << @board[6][y]
     end
  
     @board[7][0] = Rook.new("white")
@@ -132,22 +140,24 @@ class Board
     @board[7][5] = Bishop.new("white")
     @board[7][6] = Knight.new("white")
     @board[7][7] = Rook.new("white")
-    @board[7].each { |piece| white_pieces << piece }
+    @board[7].each { |piece| @white_pieces << piece }
   end
 end
  
 class Pawn
   attr_reader :symbol, :colour
-  attr_accessor :moves
+  attr_accessor :moves, :current_location
  
   def initialize(colour)
     @symbol = "p"
     @colour = colour
   end
  
-  def possible_moves(x, y)
+  def possible_moves
+    x = @current_location[0]
+    y = @current_location[1]
     @moves = Array.new
-    @moves << [x, y+1]
+    @moves << [x-1, y]
     @moves
   end
 end
@@ -156,8 +166,8 @@ class Rook
   attr_reader :symbol, :colour
  
   def initialize(colour)
-    @symbol = "r"
     @colour = colour
+    @symbol = "r" + @colour[0]
   end
 end
  
@@ -196,6 +206,3 @@ class King
     @colour = colour
   end
 end
-
-#game = Game.new
-#game.board.show
