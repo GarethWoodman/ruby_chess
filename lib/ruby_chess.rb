@@ -25,8 +25,7 @@ class Game
     while true
       puts "Move to xy"
       toXY = get_xy(gets.chomp)
-      piece.possible_moves
-      piece.check_enemies(@board) if piece.symbol[1] == "p"
+      piece.possible_moves(@board)
       if piece.moves.include?(toXY)
         move_piece(piece, toXY)
         break
