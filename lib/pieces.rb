@@ -5,7 +5,12 @@ module Moves
       if "OO" == piece
         current_piece.moves << [x, y]
       else 
-        (current_piece.moves << [x, y]) if @colour != piece.colour
+        if @colour != piece.colour
+          if piece.is_a?(King)
+            puts "check"
+          end
+          (current_piece.moves << [x, y]) 
+        end
         return false
       end
     end
@@ -87,11 +92,27 @@ class Rook
 end
  
 class Knight
+  include Moves
+
   attr_reader :symbol, :colour
+  attr_accessor :moves, :current_location
  
   def initialize(colour)
     @colour = colour
     @symbol = @colour[0] + "k"
+  end
+
+  def possible_moves(board)
+    x = @current_location[0]
+    y = @current_location[1]
+    @moves = Array.new
+
+    dx = [2, 2, -2, -2, 1, 1, -1, -1] 
+    dy = [1, -1, 1, -1, 2, -2, 2, -2] 
+
+    8.times do |i|
+      cell(dx[i]+x, dy[i]+y, board, self) 
+    end
   end
 end
  
@@ -139,13 +160,69 @@ class Queen
     @colour = colour
     @symbol = @colour[0] + "q"
   end
+
+  def possible_moves(board)
+    x = @current_location[0]
+    y = @current_location[1]
+    @moves = Array.new
+    check_for_pieces(board, x, y)
+  end
+
+  def check_for_pieces(board, x, y)
+    (1..7).each do |i|
+      break unless cell(x+i, y, board, self)
+    end
+
+    (1..7).each do |i|
+      break unless cell(x-i, y, board, self)
+    end
+
+    (1..7).each do |i|
+      break unless cell(x, y+i, board, self)
+    end
+
+    (1..7).each do |i|
+      break unless cell(x, y-i, board, self)
+    end
+
+    (1..7).each do |i|
+      break unless cell(x+i, y+i, board, self)
+    end
+
+    (1..7).each do |i|
+      break unless cell(x-i, y-i, board, self)
+    end
+
+    (1..7).each do |i|
+      break unless cell(x+i, y-i, board, self)
+    end
+
+    (1..7).each do |i|
+      break unless cell(x-i, y+i, board, self)
+    end
+  end
 end
  
 class King
+  include Moves
   attr_reader :symbol, :colour
+  attr_accessor :moves, :current_location
  
   def initialize(colour)
     @colour = colour
     @symbol = @colour[0] + "K"
+  end
+
+  def possible_moves(board)
+    x = @current_location[0]
+    y = @current_location[1]
+    @moves = Array.new
+
+    dx = [1, 1, 1, -1, -1, -1, 0, 0] 
+    dy = [1, 0, -1, 0, 1, -1, 1, -1] 
+
+    8.times do |i|
+      cell(dx[i]+x, dy[i]+y, board, self) 
+    end
   end
 end
