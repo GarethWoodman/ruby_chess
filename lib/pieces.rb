@@ -8,6 +8,9 @@ module Moves
         if @colour != piece.colour
           if piece.is_a?(King)
             puts "check"
+            piece.current_location = [x, y]
+            piece.possible_moves(board)
+            puts "check mate" if piece.moves.length == 0
           end
           (current_piece.moves << [x, y]) 
         end

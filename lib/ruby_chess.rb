@@ -28,6 +28,7 @@ class Game
       piece.possible_moves(@board)
       if piece.moves.include?(toXY)
         move_piece(piece, toXY)
+        piece.possible_moves(@board)
         break
       else
         puts "Illegal Move"
