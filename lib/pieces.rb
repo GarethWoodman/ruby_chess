@@ -10,10 +10,15 @@ module Moves
       else 
         if @colour != piece.colour
           if piece.is_a?(King)
-            puts "check"
             piece.current_location = [x, y]
             piece.possible_moves(board)
-            puts "check mate" if piece.moves.length == 0
+            if piece.moves.length == 0 
+              puts "check mate"
+              piece.in_check = "check mate"
+            else
+              puts "check"
+              piece.in_check = "check"
+            end
           end
           (current_piece.moves << [x, y]) 
         end
@@ -202,6 +207,7 @@ end
  
 class King
   include Moves
+  attr_accessor :in_check
  
   def initialize(colour)
     @colour = colour

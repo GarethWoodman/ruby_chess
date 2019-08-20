@@ -14,7 +14,7 @@ class Game
       fromXY = gets.chomp
       piece = get_piece(fromXY)
       piece.current_location = get_xy(fromXY)
-      if piece == "OO"
+      if piece == "□"
         puts "No chess piece"
         next
       else
