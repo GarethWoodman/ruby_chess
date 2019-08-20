@@ -42,7 +42,7 @@ class Game
     @board.update[toXY[0]][toXY[1]] = piece
     xy = piece.current_location
     piece.current_location = [toXY[0], toXY[1]]
-    @board.update[xy[0]][xy[1]] = "OO"
+    @board.update[xy[0]][xy[1]] = "□"
   end
 
   def get_piece(coordinates) 

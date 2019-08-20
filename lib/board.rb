@@ -11,7 +11,7 @@ class Board
     @row = Array.new
     8.times do
       8.times do
-        @row << "OO"
+        @row << "□"
       end
       @board << @row
       @row = Array.new
@@ -22,7 +22,7 @@ class Board
     display_row = Array.new
     for row in @board
       for cell in row
-         cell != "OO" ? (display_row << cell.symbol) : (display_row << cell)
+         cell != "□" ? (display_row << cell.symbol) : (display_row << cell)
       end
       puts display_row.join("-")
       display_row = Array.new

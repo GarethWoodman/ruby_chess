@@ -1,8 +1,11 @@
-module Moves  
+module Moves
+  attr_reader :symbol, :colour
+  attr_accessor :moves, :current_location
+
   def cell(x, y, board, current_piece)
     unless out_of_bounds(x, y)
       piece = board.update[x][y]
-      if "OO" == piece
+      if "□" == piece
         current_piece.moves << [x, y]
       else 
         if @colour != piece.colour
@@ -25,12 +28,11 @@ module Moves
 end
 
 class Pawn
-  attr_reader :symbol, :colour
-  attr_accessor :moves, :current_location
+  include Moves
  
   def initialize(colour)
     @colour = colour
-    @symbol = @colour[0] + "p"
+    @colour == "white" ? @symbol = "♙" : @symbol = "♟"
   end
  
   def possible_moves(board)
@@ -60,12 +62,10 @@ end
  
 class Rook
   include Moves
-  attr_reader :symbol, :colour
-  attr_accessor :moves, :current_location
  
   def initialize(colour)
     @colour = colour
-    @symbol = @colour[0] + "r"
+    @colour == "white" ? @symbol = "♖" : @symbol = "♜"
   end
 
   def possible_moves(board)
@@ -96,13 +96,10 @@ end
  
 class Knight
   include Moves
-
-  attr_reader :symbol, :colour
-  attr_accessor :moves, :current_location
  
   def initialize(colour)
     @colour = colour
-    @symbol = @colour[0] + "k"
+    @colour == "white" ? @symbol = "♘" : @symbol = "♞"
   end
 
   def possible_moves(board)
@@ -121,13 +118,10 @@ end
  
 class Bishop
   include Moves
-  
-  attr_reader :symbol, :colour
-  attr_accessor :moves, :current_location
  
   def initialize(colour)
     @colour = colour
-    @symbol = @colour[0] + "b"
+    @colour == "white" ? @symbol = "♗" : @symbol = "♝"
   end
 
   def possible_moves(board)
@@ -157,11 +151,11 @@ class Bishop
 end
  
 class Queen
-  attr_reader :symbol, :colour
+  include Moves
  
   def initialize(colour)
     @colour = colour
-    @symbol = @colour[0] + "q"
+    @colour == "white" ? @symbol = "♕" : @symbol = "♛"
   end
 
   def possible_moves(board)
@@ -208,12 +202,10 @@ end
  
 class King
   include Moves
-  attr_reader :symbol, :colour
-  attr_accessor :moves, :current_location
  
   def initialize(colour)
     @colour = colour
-    @symbol = @colour[0] + "K"
+    @colour == "white" ? @symbol = "♔" : @symbol = "♚"
   end
 
   def possible_moves(board)
