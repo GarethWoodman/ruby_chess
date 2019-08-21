@@ -1,0 +1,8 @@
+1. Create a new Game:
+   game = Game.new
+
+2. Play round:
+   game.play_round
+   
+3. Show board:
+   game.board.show
